@@ -62,6 +62,7 @@ for i = 1:n
     %Temperatura cieczy w zbiorniku
     
     T_pom = T + 0.5*Tp*((A - F_dop*T)/V);
+    
     dT = (A - F_dop*T_pom)/V;
     T = T + dT;
     
@@ -69,11 +70,15 @@ for i = 1:n
     
     %Objetosc cieczy w zbiorniku
     
-    V_lin_pom = V_lin + 0.5*Tp*(F_dop - alfa*(sqrt(h0)+(1/(2*sqrt(h0))*(h_lin - h0))));
+    V_lin_pom = V_lin + 0.5*Tp*(F_dop - alfa*sqrt(h0) - (alfa/(2*sqrt(h0))*(h_lin - h0)));
     h_lin_pom = sqrt(V_lin_pom/C);
     
-    dV_lin = Tp*(F_dop - alfa*(sqrt(h0)+(1/(2*sqrt(h0))*(h_lin_pom - h0))));
+    dV_lin = Tp* ( F_dop - alfa*sqrt(h0) - (alfa/(2*sqrt(h0))*(h_lin_pom - h0)));
     V_lin = V_lin + dV_lin;
+    
+    dT_lin = Tp*((A - F_dop*T0)/(C*h0^2) + (-2*(A - F_dop*T0)/(C*h0^3))*(h_lin_pom - h0));
+    %dT_lin = Tp*(A - F_dop*T_lin)*(-2*(A - F_dop*T_lin)/(C*h0^3))*(h_lin_pom - h0);
+    T_lin = T_lin + dT_lin;
     
     %Dane do wykresu oraz aktualizacja danych
     
@@ -83,10 +88,10 @@ for i = 1:n
     h = sqrt(V/C);
     h_lin = sqrt(V_lin/C);
     h_vector(i) = h;
-    h_lin_vector(i) = h_lin;
+    h_lin_vector(i) = h_lin_pom;
     
     T_vector(i) = T;
-    
+    T_lin_vector(i) = T_lin;
 end
 
 %Rysowanie wykresow
@@ -100,13 +105,14 @@ legend('h-zwykle','h-lin','Location','South')
 title('Wykres wysokoœci rzeczywistego oraz zlinearyzowanego poziomu cieczy')
 
 figure;
-plot(0:n-1,T_vector,'b')
+plot(h_vector,T_vector,'b')
 hold on
+plot(h_lin_vector,T_lin_vector,'g')
 xlabel('t');
 ylabel('T');
-legend('T-zwykle','Location','South')
-
+legend('T-zwykle','T-lin','Location','South')
 title('Wykres temperatury poziomu cieczy')
+
 figure;
 plot(h_lin_vector,V_lin_vector,'r')
 hold on

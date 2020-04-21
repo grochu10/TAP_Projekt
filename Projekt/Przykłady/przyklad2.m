@@ -69,3 +69,6 @@ end
 plot(czas,wyh,'b');hold on;plot(czas,wyhL,'m');
 xlabel('czas');
 ylabel('h');
+
+figure;
+plot(wyhL,wyVL)
